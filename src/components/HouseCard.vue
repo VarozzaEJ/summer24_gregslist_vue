@@ -2,11 +2,25 @@
 import { AppState } from '../AppState.js';
 import { House } from '../models/House.js';
 import { computed } from 'vue';
+import Pop from '../utils/Pop.js';
+import { housesService } from '../services/HousesService.js';
 
 
 const account = computed(() => AppState.account)
 
 defineProps({ houseProp: { type: House } })
+
+
+async function deleteHouse(houseId) {
+    try {
+        const wantsToDelete = await Pop.confirm("Are You Sure About That?")
+        if (!wantsToDelete) return
+        await housesService.deleteHouse(houseId)
+    }
+    catch (error) {
+        Pop.error(error);
+    }
+}
 
 </script>
 
@@ -30,7 +44,7 @@ defineProps({ houseProp: { type: House } })
                         :class="account?.id == houseProp.creatorId ? 'justify-content-between' : 'justify-content-end'">
                         <!-- NOTE don't forget elvis, because the account is not set in the appstate before these cards render -->
                         <button v-if="account?.id == houseProp.creatorId" class="btn btn-outline-danger"
-                            title="Delete House" type="button">
+                            title="Delete House" type="button" @click="deleteHouse(houseProp.id)">
                             <i class="mdi mdi-close-octagon fs-3"></i>
                         </button>
                         <img :src="houseProp.creator.picture" :alt="houseProp.creator.name"

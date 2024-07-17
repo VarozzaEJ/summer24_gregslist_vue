@@ -16,6 +16,13 @@ class HousesService {
         const newHouse = new House(response.data)
         AppState.houses.push(newHouse)
     }
+    async deleteHouse(houseId) {
+        const response = await api.delete(`api/houses/${houseId}`)
+        logger.log('Destroying car with the properties of:', response)
+        const houseIndex = AppState.houses.findIndex(house => house.id == houseId)
+        if (houseIndex == -1) throw new Error("You messed up finding the index");
+        AppState.houses.splice(houseIndex, 1)
+    }
 
 
 }
